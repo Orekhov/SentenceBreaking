@@ -1,0 +1,11 @@
+    Refactoring:
+     - merge (if it has sense) 'containsIndex' and 'containsAnyIndexFromRange'
+     - think about 'getSepByRange' and 'getSepByIndex' (getting validity only instead of object)
+
+    Regural expressions:
+     - add more separators
+     - add more filters
+     
+    Other:
+     - find arduous input text
+     - 
