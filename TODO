@@ -1,4 +1,4 @@
-    Refactoring:
+﻿    Refactoring:
      - merge (if it has sense) 'containsIndex' and 'containsAnyIndexFromRange'
      - think about 'getSepByRange' and 'getSepByIndex' (getting validity only instead of object)
 
