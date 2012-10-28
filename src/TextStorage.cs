@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -19,6 +19,7 @@ namespace SentenceBreaking
     {
         protected TextStorage()
         {
+            indexToPositionCache = new Dictionary<int, int>();
             separators = new List<Separator>();
             text = System.IO.File.ReadAllText("input.txt", Encoding.UTF8);
             string[] sepRegExps = System.IO.File.ReadAllLines("separators", Encoding.UTF8);
@@ -28,7 +29,11 @@ namespace SentenceBreaking
                 foreach (Match m in allMatches)
                 {
                     if (!containsAnyIndexFromRange(m.Index, m.Length))
+                    {
                         separators.Add(new Separator(m.Index, m.Length));
+                        for (int i = m.Index; i < m.Index + m.Length; i++)
+                            indexToPositionCache.Add(i, m.Index);
+                    }
                 }
             }
         }
@@ -46,34 +51,42 @@ namespace SentenceBreaking
 
         private List<Separator> separators;
         public readonly string text;
+        private Dictionary<int,int> indexToPositionCache;
 
-        public bool getSepByRange(int indexBeggining, int length, out Separator sep)
+        public int getIndexByRange(int indexBeggining, int length)
         {
-            for (int i = indexBeggining; i < indexBeggining + length; i++)
-            {
-                Separator s;
-                if (getSepByIndex(i, out s))
-                {
-                    sep = s;
-                    return true;
-                }
-            }
-            sep = new Separator(-1, -1, -1);
-            return false;
+            for (int i=indexBeggining; i<indexBeggining+length;i++)
+                if ( indexToPositionCache.ContainsKey(i) )
+                    return indexToPositionCache[i];
+            return -1;
         }
 
         public void incrementValidity(int pos)
         {
             for (int i = 0; i < separators.Count; i++)
                 if (separators[i].position == pos)
+                {
                     separators[i].validity += 1;
+                    return;
+                }
         }
 
         public void showTextWithSeparators(bool onlyValidSeparators, ConsoleColor c = ConsoleColor.DarkGreen)
         {
+            int maxValidity = separators.Select(r => r.validity).Max();
+            List<int> maxValIndexes = new List<int>();
+            foreach (Separator s in separators)
+            {
+                if (s.validity == maxValidity)
+                {
+                    for (int i = s.position; i < s.position + s.length; i++)
+                        maxValIndexes.Add(i);
+                }
+            }
+
             for (int i = 0; i < text.Length; i++)
             {
-                if (containsIndex(i) && (!onlyValidSeparators || indexBelongsToMaxValidity(i)))
+                if (containsIndex(i) && (!onlyValidSeparators || maxValIndexes.Contains(i)))
                     Console.BackgroundColor = c;
                 else
                     Console.BackgroundColor = ConsoleColor.Black;
@@ -117,26 +130,6 @@ namespace SentenceBreaking
             Console.WriteLine("\n");
         }
 
-        private bool getSepByIndex(int index, out Separator sep)
-        {
-            foreach (Separator s in separators)
-                if ((index >= s.position) && (index < s.position + s.length))
-                {
-                    sep = s;
-                    return true;
-                }
-            sep = new Separator(-1, -1, -1);
-            return false;
-        }
-
-        private bool indexBelongsToMaxValidity(int index)
-        {
-            int max = separators.Select(r => r.validity).Max();
-            Separator s;
-            getSepByIndex(index, out s);
-            return (s.validity == max);
-        }
-
         private bool containsAnyIndexFromRange(int indexBeggining, int length)
         {
             for (int i = indexBeggining; i < indexBeggining + length; i++)
@@ -147,12 +140,7 @@ namespace SentenceBreaking
 
         private bool containsIndex(int index)
         {
-            if (separators.Count == 0)
-                return false;
-            foreach (Separator s in separators)
-                if ((index >= s.position) && (index < s.position + s.length))
-                    return true;
-            return false;
+            return indexToPositionCache.ContainsKey(index);
         }
     }
 }
