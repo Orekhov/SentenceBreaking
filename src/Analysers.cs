@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -41,9 +41,9 @@ namespace SentenceBreaking
             MatchCollection allMatches = Regex.Matches(ts.text, regExp);
             foreach (Match m in allMatches)
             {
-                Separator s;
-                if (ts.getSepByRange(m.Index, m.Length, out s))
-                    ts.incrementValidity(s.position);
+                int pos = ts.getIndexByRange(m.Index, m.Length);
+                if (pos!=-1)
+                    ts.incrementValidity(pos);
             }
             ts.showMatches(allMatches);
         }
