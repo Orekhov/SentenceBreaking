@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -61,14 +61,26 @@ namespace SentenceBreaking
             return -1;
         }
 
-        public void incrementValidity(int pos)
+        public void changeValidity(int pos, int value)
         {
             for (int i = 0; i < separators.Count; i++)
                 if (separators[i].position == pos)
                 {
-                    separators[i].validity += 1;
+                    separators[i].validity += value;
                     return;
                 }
+        }
+
+        public void checkText(string regExp, int changeValidityValue)
+        {
+            MatchCollection allMatches = Regex.Matches(text, regExp);
+            foreach (Match m in allMatches)
+            {
+                int pos = getIndexByRange(m.Index, m.Length);
+                if (pos != -1)
+                    changeValidity(pos, changeValidityValue);
+            }
+            showMatches(allMatches);
         }
 
         public void showTextWithSeparators(bool onlyValidSeparators, ConsoleColor c = ConsoleColor.DarkGreen)
@@ -116,18 +128,8 @@ namespace SentenceBreaking
                 }
                 Console.Write(text[i]);
             }
-
             Console.BackgroundColor = ConsoleColor.Black;
             Console.ForegroundColor = ConsoleColor.White;
-        }
-
-        public void showValInOrder()
-        {
-            Console.WriteLine(" ");
-            foreach (Separator s in separators.OrderBy(r => r.position))
-                Console.Write(" " + s.validity + " ");
-            Console.Write(" " + separators.Sum(s => s.validity) + " ");
-            Console.WriteLine("\n");
         }
 
         private bool containsAnyIndexFromRange(int indexBeggining, int length)
