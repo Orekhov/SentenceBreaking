@@ -2,7 +2,8 @@
 
 Main idea:
 File 'separators' contains all valid separators. File 'filters' 
-contains filters, defining what is not a sentence bound. 
+contains filters, defining what is a sentence bound. File 'exclusions'
+contains exclusions, defining what is not a sentence bound.
 Application reads input.txt file and shows all bounds.
 
 
@@ -12,8 +13,10 @@ separators. More compound separators must come earlier.
 ( For example, '?!' is more compound than '?' or '!' )
 
 File 'filters' structure:
-Each line in file is a regular expression, which defines what is 
-not a sentence bound. 
+Each line in file is a regular expression, which defines what is a sentence bound. 
+
+File 'exclusions' structure:
+Each line in file is a regular expression, which defines what is not a sentence bound. 
 
 Regular expression syntax:
 Regular Expression Language from .NET Framework 4.5
