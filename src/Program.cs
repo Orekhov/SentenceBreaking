@@ -14,12 +14,14 @@ namespace SentenceBreaking
             {
                 TextStorage ts = TextStorage.Instance;
                 Console.WriteLine(" \n Text with all separators: ");
-                ts.showTextWithSeparators(true);
+                ts.showTextWithSeparators(false);
 
-                FiltersAnalyser fa = new FiltersAnalyser(ts);
-                fa.check();
+                TextAnalyser ta = new FiltersAnalyser(ts, 1);
+                ta.check();
+                ta = new ExclusionsAnalyser(ts, -1);
+                ta.check();
 
-                Console.WriteLine(" \n Result: ");
+                Console.WriteLine(" \n\n Result: ");
                 ts.showTextWithSeparators(true, ConsoleColor.DarkMagenta);
                 Console.ReadLine();
             }
